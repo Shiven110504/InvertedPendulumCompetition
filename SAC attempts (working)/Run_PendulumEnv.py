@@ -373,8 +373,8 @@ def _launch_internal(
         loader: Optional[_InternalLoaderType] = None,
         handle_return: Optional['queue.Queue[Handle]'] = None,
         key_callback: Optional[KeyCallbackType] = None,
-        show_left_ui: bool = True,
-        show_right_ui: bool = True,
+        show_left_ui: bool = False,
+        show_right_ui: bool = False,
 ) -> None:
     """Internal API, so that the public API has more readable type annotations."""
     if model is None and data is not None:

@@ -1,22 +1,29 @@
+"""
+Control adapter for inverted pendulum balancing.
+Loads trained RL model and exposes CtrlUpdate() interface for Run_PendulumEnv.py.
+"""
+
 import mujoco
-import numpy as np
-from scipy.linalg import inv, eig
+from rl_controller import RLController
+
 
 class YourCtrl:
-  def __init__(self, m:mujoco.MjModel, d: mujoco.MjData):
-    self.m = m
-    self.d = d
-    self.init_qpos = d.qpos.copy()
+    """
+    Control adapter that wraps RPO RL controller for Run_PendulumEnv.py compatibility.
+    Automatically loads the most recent RPO model from the runs directory.
+    """
 
-    # Control gains (using similar values to CircularMotion)
-    self.kp = 50.0
-    self.kd = 3.0
+    def __init__(self, m: mujoco.MjModel, d: mujoco.MjData, model_path=None):
+        """
+        Initialize the RPO RL controller.
 
+        Args:
+            m: MuJoCo model
+            d: MuJoCo data
+            model_path: Optional path to trained model (auto-detects latest RPO model if None)
+        """
+        self.controller = RLController(m, d, model_path=model_path)
 
-  def CtrlUpdate(self):
-    for i in range(6):
-       self.d.ctrl[i] = 150.0*(self.init_qpos[i] - self.d.qpos[i])  - 5.2 *self.d.qvel[i]
-    return True 
-
-
-
+    def CtrlUpdate(self):
+        """Update control signal using RL policy."""
+        return self.controller.CtrlUpdate()

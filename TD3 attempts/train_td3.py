@@ -124,15 +124,15 @@ def _evaluate(agent: TD3,
 def train_td3(max_steps: Optional[int] = None,
               seed: int = 0,
               batch_size: int = 256,
-              warmup_steps: int = 10000,
-              start_noise_std: float = 0.005,
-              end_noise_std: float = 0.001,
+              warmup_steps: int = 20000,
+              start_noise_std: float = 0.002,
+              end_noise_std: float = 0.0005,
               eval_every: int = 20,
               save_dir: str = "rl/checkpoints",
               control_dt: Optional[float] = None,
               reward_mode: str = "custom_reward",
               action_scale: float = 1.0,
-              residual_scale: float = 0.2,
+              residual_scale: float = 0.05,
               training_episodes: int = 2000,
               refine_episodes: int = 1000,
               noise_actuator_mask: Optional[np.ndarray] = None,
@@ -146,8 +146,9 @@ def train_td3(max_steps: Optional[int] = None,
               replay_max_size: int = 200_000,
               norm_freeze_steps: Optional[int] = 500_000,
               balance_target: int = 10,
-              residual_enable_threshold: int = 5,
-              residual_disable_threshold: int = 3) -> Tuple[list, list]:
+              residual_enable_threshold: int = 30,
+              residual_disable_threshold: int = 15,
+              residual_eval_margin: float = 500.0) -> Tuple[list, list]:
 
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -217,11 +218,12 @@ def train_td3(max_steps: Optional[int] = None,
     best_critic_state = None
     best_obs_norm_state = None
     total_episode_count = training_episodes + refine_episodes
-    residual_enabled = False
-    residual_success = 0
-    residual_fail = 0
     if total_episode_count <= 0:
         raise ValueError("training_episodes + refine_episodes must be positive.")
+
+    residual_enabled = False
+    baseline_streak = 0
+    residual_eval_fail = 0
 
     for ep_idx in range(1, total_episode_count + 1):
         training_phase = ep_idx <= training_episodes
@@ -229,23 +231,22 @@ def train_td3(max_steps: Optional[int] = None,
         if not norm_frozen:
             obs_norm.update(state[None, :])
         ep_ret = 0.0
-        episode_balance = 0
+        episode_noise = 0.0
 
-        current_noise = 0.0
         for _ in range(max_steps):
             if total_env_steps < warmup_steps or not residual_enabled:
                 action = np.zeros(action_dim, dtype=np.float32)
-                current_noise = 0.0
+                episode_noise = 0.0
             else:
                 if training_phase and training_episodes > 1:
                     progress = (ep_idx - 1) / max(1, training_episodes - 1)
-                    current_noise = _linear_noise(start_noise_std, end_noise_std, progress)
+                    episode_noise = _linear_noise(start_noise_std, end_noise_std, progress)
                 elif training_phase:
-                    current_noise = end_noise_std
+                    episode_noise = end_noise_std
                 else:
-                    current_noise = 0.0
+                    episode_noise = 0.0
                 nstate = obs_norm.normalize(state)
-                action = agent.act(nstate, noise_std=current_noise, noise_mask=noise_mask)
+                action = agent.act(nstate, noise_std=episode_noise, noise_mask=noise_mask)
 
             next_state, reward, terminated, truncated, info = env.step(action)
             done = bool(terminated or truncated)
@@ -258,8 +259,6 @@ def train_td3(max_steps: Optional[int] = None,
             state = next_state
             ep_ret += reward
             total_env_steps += 1
-            episode_balance = int(info.get("balance_count", episode_balance))
-
             if total_env_steps >= warmup_steps and len(rb) >= batch_size:
                 batch = rb.draw_samples(batch_size)
                 states, actions, rewards, next_states, dones = batch
@@ -271,20 +270,6 @@ def train_td3(max_steps: Optional[int] = None,
                 break
 
         scores.append(ep_ret)
-        if episode_balance >= 1:
-            residual_success += 1
-            residual_fail = 0
-        else:
-            residual_fail += 1
-            residual_success = 0
-
-        if not residual_enabled and residual_success >= residual_enable_threshold:
-            residual_enabled = True
-            print(f"[{reward_mode}] Residual control enabled at episode {ep_idx}.")
-        if residual_enabled and residual_fail >= residual_disable_threshold:
-            residual_enabled = False
-            residual_fail = 0
-            print(f"[{reward_mode}] Residual control disabled after {residual_disable_threshold} zero-balance episodes.")
 
         if eval_every > 0 and ep_idx % eval_every == 0:
             eval_seed = seed + 1000 + ep_idx
@@ -295,13 +280,35 @@ def train_td3(max_steps: Optional[int] = None,
             eval_balance_counts.append(balance_eval)
             eval_train_returns.append(ep_ret)
             phase = "train" if training_phase else "refine"
-            noise_msg = f" | Noise {current_noise:.3f}" if training_phase and residual_enabled else ""
-            mode_msg = "ON" if residual_enabled else "BASE"
+            status = "ON" if residual_enabled else "BASE"
+            noise_msg = f" | Noise {episode_noise:.4f}" if residual_enabled else ""
             print(
-                f"[{reward_mode}] Ep {ep_idx} ({phase}) [{mode_msg}] | "
+                f"[{reward_mode}] Ep {ep_idx} ({phase}) [{status}] | "
                 f"TrainRet {ep_ret:.2f} | EvalRet {eval_return:.2f} | Balance {balance_eval}"
                 f"{noise_msg} | BaseEval {baseline_return:.2f} ({baseline_balance})"
             )
+
+            if residual_enabled:
+                meets_balance = balance_eval > 0
+                meets_return = eval_return + residual_eval_margin >= baseline_return
+                if meets_balance or meets_return:
+                    residual_eval_fail = 0
+                else:
+                    residual_eval_fail += 1
+                if residual_eval_fail >= residual_disable_threshold:
+                    residual_enabled = False
+                    residual_eval_fail = 0
+                    baseline_streak = 0
+                    print(f"[{reward_mode}] Residual control disabled (eval underperformed baseline {residual_disable_threshold} times).")
+            else:
+                if baseline_balance > 0:
+                    baseline_streak += 1
+                    if baseline_streak >= residual_enable_threshold and total_env_steps >= warmup_steps:
+                        residual_enabled = True
+                        residual_eval_fail = 0
+                        print(f"[{reward_mode}] Residual control enabled at episode {ep_idx}.")
+                else:
+                    baseline_streak = 0
 
             if eval_return > best_eval:
                 best_eval = eval_return
@@ -330,4 +337,4 @@ def train_td3(max_steps: Optional[int] = None,
 
 if __name__ == "__main__":
     print("\n=== Training residual TD3 on baseline controller ===")
-    train_td3(start_noise_std=0,end_noise_std=0)
+    train_td3()

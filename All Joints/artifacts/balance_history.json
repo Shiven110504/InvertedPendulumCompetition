@@ -1,0 +1,482 @@
+[
+  [
+    100000,
+    {
+      "avg_balance": 2.0,
+      "avg_length": 1182.3,
+      "avg_reward": 2745.648261194457
+    }
+  ],
+  [
+    200000,
+    {
+      "avg_balance": 2.4,
+      "avg_length": 1327.3,
+      "avg_reward": 3238.6851306744907
+    }
+  ],
+  [
+    300000,
+    {
+      "avg_balance": 3.6,
+      "avg_length": 1979.2,
+      "avg_reward": 4899.303322899276
+    }
+  ],
+  [
+    400000,
+    {
+      "avg_balance": 6.5,
+      "avg_length": 3651.8,
+      "avg_reward": 9071.597207331795
+    }
+  ],
+  [
+    500000,
+    {
+      "avg_balance": 7.2,
+      "avg_length": 4091.8,
+      "avg_reward": 10190.209072539114
+    }
+  ],
+  [
+    600000,
+    {
+      "avg_balance": 7.8,
+      "avg_length": 4451.8,
+      "avg_reward": 11184.597769061327
+    }
+  ],
+  [
+    700000,
+    {
+      "avg_balance": 7.4,
+      "avg_length": 4138.0,
+      "avg_reward": 10369.407136678661
+    }
+  ],
+  [
+    800000,
+    {
+      "avg_balance": 7.6,
+      "avg_length": 4310.6,
+      "avg_reward": 10849.607482529076
+    }
+  ],
+  [
+    900000,
+    {
+      "avg_balance": 6.7,
+      "avg_length": 3820.3,
+      "avg_reward": 9617.544825380535
+    }
+  ],
+  [
+    1000000,
+    {
+      "avg_balance": 7.6,
+      "avg_length": 4387.2,
+      "avg_reward": 11018.635741470835
+    }
+  ],
+  [
+    1100000,
+    {
+      "avg_balance": 8.0,
+      "avg_length": 4615.4,
+      "avg_reward": 11423.269157374956
+    }
+  ],
+  [
+    1200000,
+    {
+      "avg_balance": 8.1,
+      "avg_length": 4621.3,
+      "avg_reward": 11595.719019221324
+    }
+  ],
+  [
+    1300000,
+    {
+      "avg_balance": 8.8,
+      "avg_length": 4958.8,
+      "avg_reward": 12473.694490108766
+    }
+  ],
+  [
+    1400000,
+    {
+      "avg_balance": 6.9,
+      "avg_length": 3876.2,
+      "avg_reward": 9713.738980895128
+    }
+  ],
+  [
+    1500000,
+    {
+      "avg_balance": 5.5,
+      "avg_length": 3141.4,
+      "avg_reward": 7819.401115548751
+    }
+  ],
+  [
+    1600000,
+    {
+      "avg_balance": 6.9,
+      "avg_length": 3924.3,
+      "avg_reward": 9803.394260842728
+    }
+  ],
+  [
+    1700000,
+    {
+      "avg_balance": 10.2,
+      "avg_length": 5918.4,
+      "avg_reward": 14526.210437642007
+    }
+  ],
+  [
+    1800000,
+    {
+      "avg_balance": 7.7,
+      "avg_length": 4391.2,
+      "avg_reward": 11002.035004414132
+    }
+  ],
+  [
+    1900000,
+    {
+      "avg_balance": 10.0,
+      "avg_length": 5748.1,
+      "avg_reward": 14263.020622291655
+    }
+  ],
+  [
+    2000000,
+    {
+      "avg_balance": 12.9,
+      "avg_length": 7481.7,
+      "avg_reward": 18636.836723096447
+    }
+  ],
+  [
+    2100000,
+    {
+      "avg_balance": 9.5,
+      "avg_length": 5387.7,
+      "avg_reward": 13581.234543533927
+    }
+  ],
+  [
+    2200000,
+    {
+      "avg_balance": 8.4,
+      "avg_length": 4773.0,
+      "avg_reward": 11622.62477732928
+    }
+  ],
+  [
+    2300000,
+    {
+      "avg_balance": 10.9,
+      "avg_length": 6246.6,
+      "avg_reward": 15705.677397113226
+    }
+  ],
+  [
+    2400000,
+    {
+      "avg_balance": 10.3,
+      "avg_length": 5873.2,
+      "avg_reward": 14773.882529837821
+    }
+  ],
+  [
+    2500000,
+    {
+      "avg_balance": 10.8,
+      "avg_length": 6203.3,
+      "avg_reward": 15624.499892826536
+    }
+  ],
+  [
+    2600000,
+    {
+      "avg_balance": 9.2,
+      "avg_length": 5301.4,
+      "avg_reward": 13322.779823639425
+    }
+  ],
+  [
+    2700000,
+    {
+      "avg_balance": 13.7,
+      "avg_length": 7876.6,
+      "avg_reward": 19840.172289919832
+    }
+  ],
+  [
+    2800000,
+    {
+      "avg_balance": 11.9,
+      "avg_length": 6844.2,
+      "avg_reward": 17292.363736557752
+    }
+  ],
+  [
+    2900000,
+    {
+      "avg_balance": 15.5,
+      "avg_length": 8934.8,
+      "avg_reward": 22511.94223350336
+    }
+  ],
+  [
+    3000000,
+    {
+      "avg_balance": 9.7,
+      "avg_length": 5594.6,
+      "avg_reward": 14028.347714607624
+    }
+  ],
+  [
+    3100000,
+    {
+      "avg_balance": 13.3,
+      "avg_length": 7580.3,
+      "avg_reward": 18906.684992682138
+    }
+  ],
+  [
+    3200000,
+    {
+      "avg_balance": 12.2,
+      "avg_length": 7069.3,
+      "avg_reward": 17690.139485915177
+    }
+  ],
+  [
+    3300000,
+    {
+      "avg_balance": 14.4,
+      "avg_length": 8348.1,
+      "avg_reward": 20915.455718144367
+    }
+  ],
+  [
+    3400000,
+    {
+      "avg_balance": 11.2,
+      "avg_length": 6402.5,
+      "avg_reward": 15595.034174134056
+    }
+  ],
+  [
+    3500000,
+    {
+      "avg_balance": 17.0,
+      "avg_length": 9791.7,
+      "avg_reward": 24414.52992196366
+    }
+  ],
+  [
+    3600000,
+    {
+      "avg_balance": 5.9,
+      "avg_length": 3431.7,
+      "avg_reward": 8592.17014831982
+    }
+  ],
+  [
+    3700000,
+    {
+      "avg_balance": 17.1,
+      "avg_length": 9878.8,
+      "avg_reward": 24787.315039284185
+    }
+  ],
+  [
+    3800000,
+    {
+      "avg_balance": 10.8,
+      "avg_length": 6244.5,
+      "avg_reward": 15547.871776130167
+    }
+  ],
+  [
+    3900000,
+    {
+      "avg_balance": 15.5,
+      "avg_length": 8947.3,
+      "avg_reward": 22410.99989441097
+    }
+  ],
+  [
+    4000000,
+    {
+      "avg_balance": 14.8,
+      "avg_length": 8594.0,
+      "avg_reward": 21512.119364955895
+    }
+  ],
+  [
+    4100000,
+    {
+      "avg_balance": 13.3,
+      "avg_length": 7661.6,
+      "avg_reward": 19159.80755251699
+    }
+  ],
+  [
+    4200000,
+    {
+      "avg_balance": 14.9,
+      "avg_length": 8581.3,
+      "avg_reward": 21433.6861464006
+    }
+  ],
+  [
+    4300000,
+    {
+      "avg_balance": 15.5,
+      "avg_length": 8945.4,
+      "avg_reward": 22329.965463477733
+    }
+  ],
+  [
+    4400000,
+    {
+      "avg_balance": 6.2,
+      "avg_length": 3448.6,
+      "avg_reward": 8457.118478850218
+    }
+  ],
+  [
+    4500000,
+    {
+      "avg_balance": 5.3,
+      "avg_length": 2963.5,
+      "avg_reward": 7367.921184161038
+    }
+  ],
+  [
+    4600000,
+    {
+      "avg_balance": 14.0,
+      "avg_length": 8062.6,
+      "avg_reward": 20010.8394149461
+    }
+  ],
+  [
+    4700000,
+    {
+      "avg_balance": 17.9,
+      "avg_length": 10288.9,
+      "avg_reward": 25823.316072399262
+    }
+  ],
+  [
+    4800000,
+    {
+      "avg_balance": 4.3,
+      "avg_length": 2446.7,
+      "avg_reward": 6163.186112028613
+    }
+  ],
+  [
+    4900000,
+    {
+      "avg_balance": 13.4,
+      "avg_length": 7710.7,
+      "avg_reward": 19340.070597787595
+    }
+  ],
+  [
+    5000000,
+    {
+      "avg_balance": 20.4,
+      "avg_length": 11826.3,
+      "avg_reward": 29815.53021514989
+    }
+  ],
+  [
+    5100000,
+    {
+      "avg_balance": 16.4,
+      "avg_length": 9468.6,
+      "avg_reward": 23769.672441595132
+    }
+  ],
+  [
+    5200000,
+    {
+      "avg_balance": 17.2,
+      "avg_length": 9940.9,
+      "avg_reward": 24945.032489403788
+    }
+  ],
+  [
+    5300000,
+    {
+      "avg_balance": 16.7,
+      "avg_length": 9713.0,
+      "avg_reward": 24287.309569112018
+    }
+  ],
+  [
+    5400000,
+    {
+      "avg_balance": 16.5,
+      "avg_length": 9537.1,
+      "avg_reward": 23983.091381287977
+    }
+  ],
+  [
+    5500000,
+    {
+      "avg_balance": 12.8,
+      "avg_length": 7359.1,
+      "avg_reward": 18422.57169524008
+    }
+  ],
+  [
+    5600000,
+    {
+      "avg_balance": 16.3,
+      "avg_length": 9409.6,
+      "avg_reward": 23590.288995060913
+    }
+  ],
+  [
+    5700000,
+    {
+      "avg_balance": 14.5,
+      "avg_length": 8288.9,
+      "avg_reward": 20748.06213856347
+    }
+  ],
+  [
+    5800000,
+    {
+      "avg_balance": 20.4,
+      "avg_length": 11730.8,
+      "avg_reward": 29584.55844772148
+    }
+  ],
+  [
+    5900000,
+    {
+      "avg_balance": 20.8,
+      "avg_length": 12044.7,
+      "avg_reward": 30183.204103266977
+    }
+  ],
+  [
+    6000000,
+    {
+      "avg_balance": 16.5,
+      "avg_length": 9665.7,
+      "avg_reward": 24219.69379651376
+    }
+  ]
+]

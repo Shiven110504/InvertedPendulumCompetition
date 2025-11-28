@@ -39,7 +39,9 @@ class Actor(nn.Module):
         super().__init__()
         self.body = MLP(state_dim, action_dim, hidden)
         self.tanh = nn.Tanh()
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        # device = "cuda" if torch.cuda.is_available() else "cpu"
+        # print(f"Actor using device: {device}")
+        device = "cpu"
         self.device = torch.device(device)
         self.to(self.device)
         self.body.zero_last_layer()
@@ -53,7 +55,8 @@ class Critic(nn.Module):
         super().__init__()
         self.q1 = MLP(state_dim + action_dim, 1, hidden)
         self.q2 = MLP(state_dim + action_dim, 1, hidden)
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        # device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = "cpu"
         self.device = torch.device(device)
         self.to(self.device)
 

@@ -17,7 +17,7 @@ class YourCtrl:
   Baseline controller plus optional TD3 residual policy used by Run_PendulumEnv.
   """
 
-  RESIDUAL_SCALE = 0.2
+  RESIDUAL_SCALE = 0.05
 
   def __init__(self, m: mujoco.MjModel, d: mujoco.MjData):
     self.m = m

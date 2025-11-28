@@ -25,7 +25,7 @@ class PendulumBalanceEnvCont(gym.Env):
                  control_dt: Optional[float] = None,
                  reward_mode: str = "custom_reward",
                  action_scale: float = 1.0,
-                 residual_scale: float = 0.2):
+                 residual_scale: float = 0.05):
         super().__init__()
         dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         self.model_path = model_path or os.path.join(dir_path, "Robot", "miniArm_with_pendulum.xml")
@@ -177,8 +177,8 @@ class PendulumBalanceEnvCont(gym.Env):
             0.3 * r_z +
             0.2 * r_ee +
             0.3 * r_ang -
-            1e-3 * r_act_pen -
-            1e-3 * r_dact_pen +
+            1e-2 * r_act_pen -
+            5e-3 * r_dact_pen +
             0.01
         )
         reward = float(np.clip(reward, -2.0, 2.0))
@@ -210,4 +210,3 @@ class PendulumBalanceEnvCont(gym.Env):
             "residual_norm": float(np.linalg.norm(residual)),
         }
         return obs, reward, terminated, truncated, info
-

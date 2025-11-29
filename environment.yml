@@ -1,0 +1,20 @@
+name: inverted-pendulum-gpu
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy>=2.0
+  - scipy>=1.10
+  - matplotlib>=3.8
+  - gymnasium>=0.29
+  - mujoco>=3.1
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1
+  - pip
+  - pip:
+      - glfw>=2.6

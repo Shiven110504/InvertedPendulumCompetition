@@ -24,7 +24,8 @@ except Exception:
       "elbow",
       "wrist_pitch",
     )
-    action_scale: float = 0.35
+    action_scale: float = 0.5
+    base_yaw_action_scale: float = 1.0
 
 from rl.sac_agent import SACAgent, SACConfig
 from rl.baseline_ctrl import BaselineController
@@ -86,9 +87,15 @@ class YourCtrl:
     return np.asarray(indices, dtype=np.int32)
 
   def _compute_residual_scale(self):
-    ranges = self.m.actuator_ctrlrange[self.ctrl_indices]
-    span = (ranges[:, 1] - ranges[:, 0]) * 0.5
-    return (self.cfg.action_scale * span).astype(np.float32)
+    scales = []
+    for joint_name, act_id in zip(self.residual_joints, self.ctrl_indices):
+      span = (self.m.actuator_ctrlrange[act_id, 1] - self.m.actuator_ctrlrange[act_id, 0]) * 0.5
+      if joint_name == "base_yaw":
+        factor = getattr(self.cfg, "base_yaw_action_scale", self.cfg.action_scale)
+      else:
+        factor = self.cfg.action_scale
+      scales.append(factor * span)
+    return np.asarray(scales, dtype=np.float32)
 
   def _compute_obs_dim(self):
     base_term = 2 if "base_yaw" in self.residual_joints else 0  # qvel + tau

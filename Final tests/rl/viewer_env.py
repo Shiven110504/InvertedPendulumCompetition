@@ -24,7 +24,8 @@ class ViewerEnvConfig:
     frame_skip: int = 1
     frame_skip_choices: Sequence[int] | None = None
     max_episode_steps: int = 50_000
-    action_scale: float = 0.35
+    action_scale: float = 0.5
+    base_yaw_action_scale: float = 1.0
     upright_tolerance: float = 0.25
     tip_velocity_weight: float = 0.1
     pend_vel_weight: float = 0.15
@@ -94,9 +95,14 @@ class ViewerResidualEnv:
         return np.asarray(indices, dtype=np.int32)
 
     def _compute_residual_scale(self) -> np.ndarray:
-        ranges = self.model.actuator_ctrlrange[self.ctrl_indices]
-        span = (ranges[:, 1] - ranges[:, 0]) * 0.5
-        return (self.cfg.action_scale * span).astype(np.float32)
+        scales = []
+        for joint_name, act_id in zip(self.cfg.residual_joints, self.ctrl_indices):
+            span = (self.model.actuator_ctrlrange[act_id, 1] - self.model.actuator_ctrlrange[act_id, 0]) * 0.5
+            if joint_name == "base_yaw":
+                scales.append(self.cfg.base_yaw_action_scale * span)
+            else:
+                scales.append(self.cfg.action_scale * span)
+        return np.asarray(scales, dtype=np.float32)
 
     def _compute_obs_dim(self) -> int:
         base_term = 2 if "base_yaw" in self.cfg.residual_joints else 0  # qvel + tau

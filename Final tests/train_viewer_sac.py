@@ -14,28 +14,41 @@ import torch
 from rl.viewer_env import ViewerEnvConfig, ViewerResidualEnv
 from rl.sac_agent import ReplayBuffer, SACAgent, SACConfig
 
+env_val = os.getenv("RESIDUAL_JOINTS", "")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train SAC in viewer_env to mirror Run_PendulumEnv pushes.")
-    parser.add_argument("--total_steps", type=int, default=5_000_000)
+    parser.add_argument("--total_steps", type=int, default=6_000_000)
     parser.add_argument("--random_steps", type=int, default=50_000)
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--replay_size", type=int, default=2_000_000)
     parser.add_argument("--eval_interval", type=int, default=100_000)
     parser.add_argument("--eval_episodes", type=int, default=5)
     parser.add_argument("--updates_per_step", type=int, default=1)
-    parser.add_argument("--checkpoint_dir", type=str, default="artifacts/viewer_only")
-    parser.add_argument("--save_path", type=str, default="artifacts/viewer_only/sac_viewer.pt")
+    parser.add_argument("--checkpoint_dir", type=str, default= env_val)
+    parser.add_argument("--save_path", type=str, default= env_val + "\sac_viewer.pt")
     parser.add_argument("--seed", type=int, default=11)
     parser.add_argument("--device", type=str, default="auto")
     return parser.parse_args()
 
 
-def build_envs(seed: int) -> Dict[str, ViewerResidualEnv]:
+def _parse_residual_joints(default_joints: tuple[str, ...]) -> tuple[str, ...]:
+    env_val = os.getenv("RESIDUAL_JOINTS", "")
+    if env_val.strip():
+        joints = tuple(j.strip() for j in env_val.split(",") if j.strip())
+        if joints:
+            print(f"[train_viewer_sac] Using residual joints from RESIDUAL_JOINTS: {joints}")
+            return joints
+    return default_joints
+
+
+def build_envs(seed: int, residual_joints: tuple[str, ...]) -> Dict[str, ViewerResidualEnv]:
     root = os.path.dirname(os.path.realpath(__file__))
     model_path = os.path.join(root, "Robot", "miniArm_with_pendulum.xml")
     cfg = ViewerEnvConfig(
         model_path=model_path,
+        residual_joints=residual_joints,
         frame_skip=1,
         frame_skip_choices=[3, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7, 8, 9, 10, 11, 12],
         max_episode_steps=200_000,
@@ -104,8 +117,21 @@ def main() -> None:
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
 
+    # Use dataclass default without instantiating.
+    default_joints = ViewerEnvConfig.__dataclass_fields__["residual_joints"].default  # type: ignore[index]
+    residual_joints = _parse_residual_joints(tuple(default_joints))
+
+    # Derive save/checkpoint dirs from joints to avoid collisions.
+    tag = "-".join(residual_joints)
+    base_dir = os.path.join("artifacts", f"viewer_only_{tag}")
+    checkpoint_dir = base_dir
+    save_path = os.path.join(base_dir, "sac_viewer.pt")
+    if args.checkpoint_dir != "artifacts/viewer_only":
+        checkpoint_dir = args.checkpoint_dir
+        save_path = args.save_path
+
     device = torch.device(args.device) if args.device != "auto" else torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    envs = build_envs(args.seed)
+    envs = build_envs(args.seed, residual_joints)
     env = envs["train"]
     eval_env = envs["eval"]
 
@@ -113,7 +139,7 @@ def main() -> None:
     agent = SACAgent(sac_cfg, device=device)
     buffer = ReplayBuffer(env.observation_size(), env.action_size(), capacity=args.replay_size)
 
-    os.makedirs(args.checkpoint_dir, exist_ok=True)
+    os.makedirs(checkpoint_dir, exist_ok=True)
     episode_reward = 0.0
     episode_length = 0
     episode_rewards_history = []
@@ -162,14 +188,14 @@ def main() -> None:
                 f"length={eval_stats['length']:.1f} balance={eval_stats['balance']:.2f} "
                 f"elapsed={elapsed/60:.1f}m alpha={alpha_val:.3f}"
             )
-            ckpt_path = os.path.join(args.checkpoint_dir, f"sac_viewer_step{step}.pt")
+            ckpt_path = os.path.join(checkpoint_dir, f"sac_viewer_step{step}.pt")
             agent.save(ckpt_path)
-            save_reward_plot(episode_rewards_history, os.path.join(args.checkpoint_dir, "reward_plot.png"))
+            save_reward_plot(episode_rewards_history, os.path.join(checkpoint_dir, "reward_plot.png"))
 
-    os.makedirs(os.path.dirname(args.save_path), exist_ok=True)
-    agent.save(args.save_path)
-    save_reward_plot(episode_rewards_history, os.path.join(args.checkpoint_dir, "reward_plot.png"))
-    print(f"Saved final agent to {args.save_path}")
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    agent.save(save_path)
+    save_reward_plot(episode_rewards_history, os.path.join(checkpoint_dir, "reward_plot.png"))
+    print(f"Saved final agent to {save_path}")
 
 
 if __name__ == "__main__":

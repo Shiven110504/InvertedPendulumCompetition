@@ -16,6 +16,7 @@ You can change the model in YourControlCode.py on line 67 by changing the path.
 It should be set to a decently working model already so you just need to run: python Run_Pendulum.py
 
 Video given called "SAC Attempts video.mp4"
+<video controls src="SAC attempts video.mp4" title="Title"></video>
 
 Next 'working' model uses a manual baseline controller and an SAC agent trained to learn residual control on the base_yaw, shoulder_pitch, and elbow joints:
 To run this switch to the 'Curriculum Attempt' directory. 
@@ -24,9 +25,11 @@ To run with the current final model run:
 $env:SAC_AGENT_PATH="C:\Users\19784\OneDrive\Documents\GitHub\InvertedPendulumCompetition\Curriculum Attempt\artifacts\sac_residual.pt"; python Run_PendulumEnv.py
 
 Video given called "SAC 3 Joints video.mp4"
+<video controls src="SAC 3 Joints video.mp4" title="Title"></video>
 
 Finally, I tried a model that trains residuals on all joints. It ended up working a bit differently (not actually better):
 To run, switch to the 'All Joints' directory and run:
 $env:SAC_AGENT_PATH="C:\Users\19784\OneDrive\Documents\GitHub\InvertedPendulumCompetition\All Joints\artifacts\sac_residual.pt"; python Run_PendulumEnv.py
 
 Video: "SAC All Joints video.mp4"
+<video controls src="SAC All Joints video.mp4" title="Title"></video>

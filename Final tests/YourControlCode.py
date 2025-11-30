@@ -7,7 +7,25 @@ try:
 except Exception:
   torch = None
 
-from rl.residual_env import ResidualEnvConfig
+try:
+  from rl.residual_env import ResidualEnvConfig
+except Exception:
+  # Minimal fallback if residual_env is not available in this package.
+  from dataclasses import dataclass
+  from typing import Sequence
+
+  @dataclass
+  class ResidualEnvConfig:
+    model_path: str = ""
+    residual_joints: Sequence[str] = (
+      "base_yaw",
+      "shoulder_pitch",
+      "shoulder_roll",
+      "elbow",
+      "wrist_pitch",
+    )
+    action_scale: float = 0.35
+
 from rl.sac_agent import SACAgent, SACConfig
 from rl.baseline_ctrl import BaselineController
 
@@ -27,7 +45,7 @@ class YourCtrl:
 
     # Residual SAC settings (aligned with training defaults).
     self.cfg = ResidualEnvConfig(model_path="")
-    self.residual_joints = self.cfg.residual_joints
+    self.residual_joints = self._load_residual_joints(self.cfg.residual_joints)
     self.ctrl_indices = self._select_actuators(self.residual_joints)
     self.residual_scale = self._compute_residual_scale()
     self.pend_joint_id = mujoco.mj_name2id(self.m, mujoco.mjtObj.mjOBJ_JOINT, "pend_roll")
@@ -41,6 +59,15 @@ class YourCtrl:
     self.agent = None
     self.use_agent = False
     self._maybe_load_agent()
+
+  def _load_residual_joints(self, default_joints):
+    env_val = os.getenv("RESIDUAL_JOINTS", "")
+    if env_val.strip():
+      joints = [j.strip() for j in env_val.split(",") if j.strip()]
+      if joints:
+        print(f"[YourControlCode] Using residual joints from RESIDUAL_JOINTS: {joints}")
+        return tuple(joints)
+    return tuple(default_joints)
 
   def _select_actuators(self, joint_names):
     indices = []
